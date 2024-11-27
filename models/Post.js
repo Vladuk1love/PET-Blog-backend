@@ -3,11 +3,13 @@ import mongoose from "mongoose";
 const PostSchema = new mongoose.Schema({
     title: {
       type: String,
-      required: true
+      required: true,
+      unique: false
     },
     text: {
       type: String,
-      required: true
+      required: true,
+      unique: false
     },
     tags: {
       type: Array,

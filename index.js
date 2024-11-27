@@ -7,6 +7,7 @@ import checkAuth from './utils/checkAuth.js'
 import handleValidationErrors from './utils/handleValidationErrors.js'
 import * as PostController from './controllers/PostController.js'
 import * as UserController from './controllers/UserController.js'
+import {MONGOURL} from "./config.js";
 
 // Создаем приложение Express
 const app = express();
@@ -30,7 +31,7 @@ const multerUpload = multer({storage})
 
 // Подключение к БД MongoDB
 mongoose.connect(
-  'mongodb+srv://admin:wwwwww@petblog.vz5bmgj.mongodb.net/blog?retryWrites=true&w=majority&appName=PetBlog'
+  MONGOURL
 ).then(
   () => console.log('DataBase connected')
 ).catch(
@@ -46,7 +47,11 @@ mongoose.connect(
 // Авторизация
 app.post('/auth/register', registerValidator, handleValidationErrors, UserController.register)
 app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login)
-app.get('/auth/me/:id', checkAuth, UserController.getMe)
+app.get('/auth/me/', checkAuth, UserController.getMe)
+
+
+app.get('/user', checkAuth, UserController.getOne)
+app.patch('/user/update', checkAuth, UserController.update)
 
 // Картинки
 app.post('/upload', checkAuth, multerUpload.single('image'), (req, res) => {
@@ -56,12 +61,14 @@ app.post('/upload', checkAuth, multerUpload.single('image'), (req, res) => {
 })
 
 // Посты
-app.get('/posts', PostController.getAll)
+app.get(`/posts`, PostController.getAll)
 app.get('/posts/popular', PostController.getMostPopular)
-app.get('/posts/:id', PostController.getOne)
-app.post('/posts', checkAuth, postCreateValidator, handleValidationErrors, PostController.create)
-app.delete('/posts/:id', checkAuth, PostController.removeOne)
-app.patch('/posts/:id', checkAuth, postCreateValidator, handleValidationErrors, PostController.update)
+app.get('/posts/certain', PostController.getOne)
+app.get('/posts/count', checkAuth, PostController.getCount)
+app.get('/posts/author/:authorId', checkAuth, PostController.getByAuthor)
+app.post('/posts/certain', checkAuth, postCreateValidator, handleValidationErrors, PostController.create)
+app.delete('/posts/certain/:id', checkAuth, PostController.removeOne)
+app.patch('/posts/certain/:id', checkAuth, postCreateValidator, handleValidationErrors, PostController.update)
 
 
 // Запускаем веб сервер на порте 4444, возвращаем ошибку|сообщение об успешном старте

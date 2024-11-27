@@ -15,15 +15,11 @@ export default (req, res, next) => {
     }catch (err){
         return res.status(403).json({
         message: 'Нет доступа'
-      })
-    }
+      })}
 
   }else{
     return res.status(403).json({
       message: 'Нет доступа'
     })
   }
-
-  // res.send(token)
-  // console.log(token)
 }
